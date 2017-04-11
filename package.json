@@ -1,0 +1,25 @@
+{
+  "name": "sunnies",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "jquery": "^3.1.1",
+    "next": "^1.2.3",
+    "react": "^15.4.2",
+    "react-d3-wrap": "^2.1.2",
+    "react-dom": "^15.4.2"
+  },
+  "devDependencies": {
+    "d3": "^4.7.4",
+    "re-base": "^2.7.0"
+  },
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
+}
