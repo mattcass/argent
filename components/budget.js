@@ -12,16 +12,21 @@ export default class Budget extends React.Component {
   render() {
 
     return (
-      <form action="" ref={(input) => this.form = input} onSubmit={(e) => this.handleForm(e)}>
+      <section className="budget">
         <p>Your monthly budget is currently: ${(+this.props.budget).toFixed(2)}</p>
-        <label>
-          What is your new budget?
+        <form action="" ref={(input) => this.form = input} onSubmit={(e) => this.handleForm(e)}>
+          <label htmlFor="budget">
+            What is your new budget?
+          </label>
           <input
             type="number"
+            id="budget"
+            placeholder="$0000.00"
+            required
             ref={(input) => {this.input = input }} />
-          </label>
-        <button type="submit">$</button>
-      </form>
+          <button type="submit" className="btn">Budget</button>
+        </form>
+      </section>
     )
 
   }

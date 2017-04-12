@@ -1,6 +1,7 @@
 import React from 'react'
-import Head from 'next/head'
 
+import AppHeader from '../components/head'
+import Login from '../components/Login'
 import Budget from '../components/budget'
 import Spent from '../components/spent'
 import Payments from '../components/payments'
@@ -91,16 +92,6 @@ export default class App extends React.Component {
     })
   }
 
-  renderLogin = () => {
-    return (
-      <div>
-        <h2>CASH APP</h2>
-        <p>Login to manage your monthly budget</p>
-        <button type="button" className="github btn" onClick={() => this.authenticate('github')}>Login with Github</button>
-      </div>
-    )
-  }
-
   render() {
     const spentCash = Object.keys(this.state.spent)
     const total = spentCash.reduce((prevTotal, key) => {
@@ -118,50 +109,41 @@ export default class App extends React.Component {
     // check if they are logged in!
     if ( !this.state.uid ) {
       return (
-        <div>
-          {this.renderLogin()}
-        </div>
+        <Login authenticate={this.authenticate}/>
       )
     }
 
     return (
       <div className="app">
-        <Head>
-          <title>cash $</title>
-          <meta name="description" content="cash rules everything around me"/>
-          <meta viewport="viewport" contnet="initial-scale=1.0 width=device-width" />
-        </Head>
-
+        <AppHeader />
         <header className="header">
-          <img src={this.state.user.photoURL} />
-          <button className="btn" onClick={() => this.logout()}>Log Out</button>
+          logo?
+          <button className="btn user" onClick={() => this.logout()}>
+            <img src={this.state.user.photoURL} />
+            Log Out
+          </button>
         </header>
         <main className="main">
-          <header>
-          <h1 className="highlight">
-            You currently have ${total.toFixed(2)} left the for the month of {month}.
-          </h1>
-          <h2 className="highlight">
-            You have spent ${spent.toFixed(2)} already this month.
-          </h2>
-          </header>
-
-          <Spent addPayment={this.addPayment}/>
-          <Budget budget={this.state.budget} updateBudget={this.updateBudget}/>
-          <Payments
-            spent={this.state.spent}
-            removePayment={this.removePayment}
-          />
+          <div className="main-content">
+            <header className="description">
+              <h1>
+                You have spent ${spent.toFixed(2)} this month.
+              </h1>
+              <h2>
+                You still have ${total.toFixed(2)} left the for the month of {month}.
+              </h2>
+            </header>
+            <Spent addPayment={this.addPayment}/>
+            <Budget budget={this.state.budget} updateBudget={this.updateBudget} />
+          </div>
+          <Payments spent={this.state.spent} removePayment={this.removePayment} />
         </main>
-        <aside className="aside">
+        <aside>
           <Graph data={this.state.spent} />
         </aside>
         <style>{`
           * {
             box-sizing: border-box;
-          }
-          * + * {
-            margin-top: 1em;
           }
           html, body  {
             padding: 0;
@@ -169,54 +151,68 @@ export default class App extends React.Component {
             font-family: -apple-system,BlinkMacSystemFont,avenir
               next,avenir,helvetica,helvetica neue,ubuntu,roboto,noto,segoe
               ui,arial,sans-serif;
-
-          }
-          .highlight {
-            font-family: Georgia, serif;
           }
           h1, h2 {
             line-height: 1.25;
             color: #000;
             font-size: 2em;
             font-size: 24px;
+            font-family: Georgia, serif;
             letter-spacing: 1.2px;
             display: inline;
             margin: 0;
           }
-          .app {
-
-          }
           .header {
             display: flex;
             justify-content: space-between;
-            padding: 1em;
+            align-items: center;
+            padding: 0.5em 4em;
             border-bottom: 1px solid #f9f9f9;
             background: #f1f1f1;
           }
           img {
-            width: 60px;
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
             border-radius: 100%;
           }
           .main {
-            padding: 3em 4em;
-
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
           }
-          .aside {
-            width: 100%;
-            margin-top: 5em;
+          .main-content {
+            max-width: 600px;
+            padding: 2em 4em;
+          }
+          .description {
+            margin: 2em 0 0 0;
+          }
+          .spent, .budget {
+            margin: 4em 0;
           }
           ul {
             padding: 0;
             list-style-type: none;
           }
           input {
-            width: 80%;
             margin-top: 1em;
-            padding: 0.75em;
+            padding: 6px 12px;
+            font-size: 14px;
+            flex-grow: 1;
+            margin: 0;
+            line-height: 20px;
             margin-right: 0.25em;
-            border-radius: 2px;
-            border: 1px solid;
-            min-width: 100px;
+            border-radius: 0.25em;
+            border: 1px solid rgba(27,31,35,0.2);
+          }
+          form {
+            display: flex;
+            flex-wrap: wrap;
+          }
+          label {
+            width: 100%;
+            margin-bottom: 0.75em;
           }
           .btn {
             color: #0366d6;
@@ -228,8 +224,8 @@ export default class App extends React.Component {
             font-weight: 600;
             line-height: 20px;
             white-space: nowrap;
-            text-transform: uppercase;
             vertical-align: middle;
+            margin: 0;
             cursor: pointer;
             user-select: none;
             border: 1px solid rgba(27,31,35,0.2);
@@ -242,6 +238,10 @@ export default class App extends React.Component {
           }
           .btn:active {
             box-shadow: inset 0 0.15em 0.3em rgba(27,31,35,0.15);
+          }
+          .btn.user {
+            display: flex;
+            align-items: center;
           }
           .payment-list li {
             margin-top: 0.25em;

@@ -17,18 +17,22 @@ export default class Spent extends React.Component {
   }
   render() {
     return (
-      <form action="" ref={(input) => this.form = input} onSubmit={(e) => this.handleForm(e) }>
-        <label className="sr-only">
-          How much did you just spend?
+      <section className="spent">
+        <form action="" ref={(input) => this.form = input} onSubmit={(e) => this.handleForm(e) }>
+          <label htmlFor="spent">
+            How much did you just spend?
+          </label>
           <input
             type="number"
             step="00.01"
+            id="spent"
+            placeholder="$000.00"
             ref={(input) => {this.input = input }}
             required
           />
-        </label>
-        <button type="submit">$</button>
-      </form>
+          <button type="submit" className="btn">Spent</button>
+        </form>
+      </section>
     )
   }
 }
