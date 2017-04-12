@@ -13,7 +13,7 @@ export default class App extends React.Component {
     spent: {},
     budget: 0,
     uid: null,
-    owner: null
+    user: null
   }
 
   componentWillMount() {
@@ -40,17 +40,17 @@ export default class App extends React.Component {
     }
 
     this.setState({
-      owner: authData.user.uid,
+      user: authData.user,
       uid: authData.user.uid
     })
 
-    this.spentRef = base.syncState(`users/${this.state.owner}/spent/`,
+    this.spentRef = base.syncState(`users/${this.state.uid}/spent/`,
       {
         context: this,
         state: 'spent'
       }
     )
-    this.budgetRef = base.syncState(`users/${this.state.owner}/budget/`,
+    this.budgetRef = base.syncState(`users/${this.state.uid}/budget/`,
       {
         context: this,
         state: 'budget'
@@ -115,8 +115,6 @@ export default class App extends React.Component {
 
     const month = new Date().toLocaleString('en-us', { month: 'long'})
 
-    const logout = <button onClick={() => this.logout()}>Log Out!</button>
-
     // check if they are logged in!
     if ( !this.state.uid ) {
       return (
@@ -135,15 +133,21 @@ export default class App extends React.Component {
         </Head>
 
         <header className="header">
-          {logout}
+          <img src={this.state.user.photoURL} />
+          <button className="btn" onClick={() => this.logout()}>Log Out</button>
         </header>
         <main className="main">
-          <section>
-            <Budget budget={this.state.budget} updateBudget={this.updateBudget}/>
-            <h1>You currently have ${total.toFixed(2)} left the for the month of {month}.</h1>
-            <Spent addPayment={this.addPayment}/>
-            <h2 className="header-font">You have spent ${spent.toFixed(2)} already this month.</h2>
-          </section>
+          <header>
+          <h1 className="highlight">
+            You currently have ${total.toFixed(2)} left the for the month of {month}.
+          </h1>
+          <h2 className="highlight">
+            You have spent ${spent.toFixed(2)} already this month.
+          </h2>
+          </header>
+
+          <Spent addPayment={this.addPayment}/>
+          <Budget budget={this.state.budget} updateBudget={this.updateBudget}/>
           <Payments
             spent={this.state.spent}
             removePayment={this.removePayment}
@@ -167,29 +171,35 @@ export default class App extends React.Component {
               ui,arial,sans-serif;
 
           }
-          .header-font {
+          .highlight {
             font-family: Georgia, serif;
           }
-          h1 {
-            font-weight: bold;
+          h1, h2 {
             line-height: 1.25;
             color: #000;
-            font-family: Georgia, serif;
             font-size: 2em;
-            font-size: 28px;
+            font-size: 24px;
+            letter-spacing: 1.2px;
+            display: inline;
+            margin: 0;
           }
           .app {
 
           }
           .header {
             display: flex;
-            align-items: flex-end;
+            justify-content: space-between;
             padding: 1em;
             border-bottom: 1px solid #f9f9f9;
             background: #f1f1f1;
           }
+          img {
+            width: 60px;
+            border-radius: 100%;
+          }
           .main {
-            width: 50%;
+            padding: 3em 4em;
+
           }
           .aside {
             width: 100%;
@@ -208,15 +218,30 @@ export default class App extends React.Component {
             border: 1px solid;
             min-width: 100px;
           }
-          label + button {
-            width: 10%;
-            display: inline-block;
-            padding: 0.75em;
-            border-radius: 2px;
-            border: 1px solid;
-          }
           .btn {
-            padding: 1em;
+            color: #0366d6;
+            background-color: #fff;
+            position: relative;
+            display: inline-block;
+            padding: 6px 12px;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 20px;
+            white-space: nowrap;
+            text-transform: uppercase;
+            vertical-align: middle;
+            cursor: pointer;
+            user-select: none;
+            border: 1px solid rgba(27,31,35,0.2);
+            border-radius: 0.25em;
+            appearance: none;
+          }
+          .btn:hover,
+          .btn:focus {
+            background-color: #f6f8fa;
+          }
+          .btn:active {
+            box-shadow: inset 0 0.15em 0.3em rgba(27,31,35,0.15);
           }
           .payment-list li {
             margin-top: 0.25em;

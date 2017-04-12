@@ -110,8 +110,8 @@ export default class Graph extends React.Component {
         </svg>
         <style>{`
           .graph-container {
-            width: 50%;
             min-width: 400px;
+            width: 80%;
           }
           .axis path,
           .axis line {
