@@ -143,7 +143,7 @@ export default class App extends React.Component {
             <Budget budget={this.state.budget} updateBudget={this.updateBudget} />
           </div>
           <div>
-            <Pie data={[500, 300]}/>
+            <Pie data={[+spent.toFixed(2), +total.toFixed(2)]}/>
           </div>
         </main>
         <section>

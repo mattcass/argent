@@ -10,7 +10,7 @@ D3 and React components alike should be as stateless as possible
 
 const d3Pie = {}
 
-d3Pie.create = (el, props, data) => {
+d3Pie.init = (el, props, data) => {
 
   // define svg element
   var svg = d3.select(el).append('svg')
@@ -21,44 +21,61 @@ d3Pie.create = (el, props, data) => {
       .attr('class', 'arcs')
       .attr("transform", "translate(" + props.width / 2 + "," + props.height / 2 + ")");
 
-    d3Pie.update(el, props, data)
+    d3Pie.render(el, props, data)
 }
 
-d3Pie.update = (el, props, data) => {
+d3Pie.render = (el, props, data) => {
 
-const color = d3.scaleOrdinal().range(["#253F4C", "#228AA5"])
+  const color = d3.scaleOrdinal().range(["#253F4C", "#228AA5"])
 
-const pie = d3.pie()
+  const pie = d3.pie()
               .sort(null)
               .value(function(d) {
                 return d;
               })
+  const radius = Math.min(props.width, props.height) / 2;
 
-
-const radius = Math.min(props.width, props.height) / 2;
-
-const arc = d3.arc()
+  const arc = d3.arc()
               .outerRadius( radius - 10)
               .innerRadius(0)
 
-  // parse the data
   data.forEach(function(d) {
     d = +d
   })
 
 
+  var path = d3.select(el).select('.arcs').selectAll('path').data(pie(data))
 
-  // append g elements to arc
-  var g = d3.select(el).selectAll('.arcs');
-  var slice = g.selectAll('.arc')
-    .data(pie(data))
-    .enter().append('g')
-    .attr('class', 'arc')
+  path.enter().append('path')
+    .attr("fill", function(d, i) { return color(i) })
+    .each(function(d) {this.current = d;} );
 
-  // append the path of the arc
-  slice.append('path')
-    .attr('d', arc)
-    .style("fill", function(d) { return color(d.data) })
+  path.transition()
+    .attrTween('d', arcTween)
+
+  path.exit().remove()
+
+  function arcTween(a) {
+    var i = d3.interpolate(this.current, a);
+      this.current = i(0);
+      return function(t) {
+        return arc(i(t));
+    };
+  }
+
+
+
+  // // append g elements to arc
+  // var g = d3.select(el).selectAll('.arcs');
+  // var slice = g.selectAll('.arc')
+  //   .data(pie(data))
+  //   .enter().append('g')
+  //   .attr('class', 'arc')
+  //
+  // // append the path of the arc
+  // slice.append('path')
+  //   .attr('d', arc)
+  //   .style("fill", function(d) { return color(d.data) })
 }
 
 

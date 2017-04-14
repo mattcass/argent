@@ -15,28 +15,24 @@ export default class Pie extends React.Component {
 
   componentDidMount() {
     var el = this.element
-    d3Pie.create(el, {
+
+    d3Pie.init(el, {
       width: this.props.width,
       height: this.props.height
-    }, this.getData())
-
+    }, this.props.data)
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentWillUpdate(nextProps, nextState) {
+    console.log(nextProps.data)
     var el = this.element
-    d3Pie.update(el, {
-      width: this.props.width,
-      height: this.props.height
-    }, this.getData())
 
+    if ( this.props.data !== nextProps.data) {
+      d3Pie.render(el, {
+        width: this.props.width,
+        height: this.props.height
+      }, nextProps.data)
+    }
     return false
-  }
-
-  getData = () => {
-    const data = this.props.data
-
-    console.log(data)
-    return data
   }
 
   render() {

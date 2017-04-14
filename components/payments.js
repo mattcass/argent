@@ -36,12 +36,10 @@ export default class Payments extends React.Component {
         </table>
         <style>{`
           .payments {
-            position: absolute;
-            left: -999px;
             border-top: 1px solid rgba(0,0,0,0.25);
             padding: 2em;
             overflow: auto;
-            max-height: 400px;
+            max-height: 200px;
           }
           table {
             width: 100%;
