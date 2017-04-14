@@ -3,3 +3,8 @@ export function dateString() {
   today.setHours(0, 0, 0, 0);
   return today;
 }
+
+export function decimal(number) {
+  var number = +number
+  return number.toFixed(2)
+}

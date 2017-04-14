@@ -1,5 +1,6 @@
 import React from 'react'
 import TrashSvg from '../static/icons/trash.svg';
+import { decimal } from '../static/helpers'
 
 export default class Payments extends React.Component {
   static propTypes = {
@@ -12,7 +13,7 @@ export default class Payments extends React.Component {
     const button = <button type="button" className="btn delete" onClick={() => this.props.removePayment(key)}><TrashSvg /></button>
     return (
       <tr key={key}>
-        <td><b>${(spent.payment).toFixed(2)}</b></td>
+        <td><b>${+decimal(spent.payment)}</b></td>
         <td>{spent.date}</td>
         <td>{button}</td>
       </tr>

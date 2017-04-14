@@ -51,6 +51,7 @@ d3Pie.render = (el, props, data) => {
     .each(function(d) {this.current = d;} );
 
   path.transition()
+    .duration(750)
     .attrTween('d', arcTween)
 
   path.exit().remove()
@@ -62,25 +63,6 @@ d3Pie.render = (el, props, data) => {
         return arc(i(t));
     };
   }
-
-
-
-  // // append g elements to arc
-  // var g = d3.select(el).selectAll('.arcs');
-  // var slice = g.selectAll('.arc')
-  //   .data(pie(data))
-  //   .enter().append('g')
-  //   .attr('class', 'arc')
-  //
-  // // append the path of the arc
-  // slice.append('path')
-  //   .attr('d', arc)
-  //   .style("fill", function(d) { return color(d.data) })
 }
-
-
-d3Pie.destroy = function(el) {
-  // Any clean-up would go here
-};
 
 export default d3Pie

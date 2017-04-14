@@ -23,7 +23,6 @@ export default class Pie extends React.Component {
   }
 
   componentWillUpdate(nextProps, nextState) {
-    console.log(nextProps.data)
     var el = this.element
 
     if ( this.props.data !== nextProps.data) {
@@ -32,6 +31,7 @@ export default class Pie extends React.Component {
         height: this.props.height
       }, nextProps.data)
     }
+
     return false
   }
 

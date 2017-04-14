@@ -1,6 +1,4 @@
-import React from 'react'
 import * as d3 from "d3"
-import ReactDOM from 'react'
 const window = window || global
 
 export default class Graph extends React.Component {

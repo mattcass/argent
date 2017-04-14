@@ -9,6 +9,7 @@ import Graph from '../components/graph'
 import Pie from '../components/pieChart'
 import base from '../static/base'
 import sampleData from '../static/sampleData'
+import { decimal } from '../static/helpers'
 
 import BarGraphSvg from '../static/icons/bar-graph.svg';
 import PaperSvg from '../static/icons/paper.svg';
@@ -100,12 +101,12 @@ export default class App extends React.Component {
     let spentCash = Object.keys(this.state.spent)
     let total = spentCash.reduce((prevTotal, key) => {
       let spent = this.state.spent[key].payment
-      return +prevTotal - spent
-    }, +this.state.budget)
+      return prevTotal - spent
+    }, this.state.budget)
 
     let spent = spentCash.reduce((sum, key) => {
       let spent = this.state.spent[key].payment
-      return +sum + spent
+      return sum + spent
     }, 0)
 
     const month = new Date().toLocaleString('en-us', { month: 'long'})
@@ -133,17 +134,17 @@ export default class App extends React.Component {
           <div className="main-content">
             <header className="description">
               <h2>
-                You have spent ${spent.toFixed(2)} this month.
+                You have spent ${decimal(spent)} this month.
               </h2>
               <h3>
-                You still have ${total.toFixed(2)} left the for the month of {month}.
+                You still have ${decimal(total)} left the for the month of {month}.
               </h3>
             </header>
             <Spent addPayment={this.addPayment}/>
             <Budget budget={this.state.budget} updateBudget={this.updateBudget} />
           </div>
           <div>
-            <Pie data={[+spent.toFixed(2), +total.toFixed(2)]}/>
+            <Pie data={[+decimal(spent), +decimal(total)]}/>
           </div>
         </main>
         <section>
