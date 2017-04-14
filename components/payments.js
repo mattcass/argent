@@ -1,4 +1,5 @@
 import React from 'react'
+import TrashSvg from '../static/icons/trash.svg';
 
 export default class Payments extends React.Component {
   static propTypes = {
@@ -8,7 +9,7 @@ export default class Payments extends React.Component {
 
   renderPaymentList = (key) => {
     const spent = this.props.spent[key]
-    const button = <button type="button" className="btn" onClick={() => this.props.removePayment(key)}>&times;</button>
+    const button = <button type="button" className="btn delete" onClick={() => this.props.removePayment(key)}><TrashSvg /></button>
     return (
       <tr key={key}>
         <td><b>${(spent.payment).toFixed(2)}</b></td>
@@ -35,19 +36,33 @@ export default class Payments extends React.Component {
         </table>
         <style>{`
           .payments {
-            box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
-            padding: 2em 4em 2em 2em;
+            position: absolute;
+            left: -999px;
+            border-top: 1px solid rgba(0,0,0,0.25);
+            padding: 2em;
             overflow: auto;
-            max-height: 600px;
+            max-height: 400px;
+          }
+          table {
+            width: 100%;
           }
           table th {
             text-align: left;
-            padding: 0.25em;
             min-width: 150px;
+          }
+          thead {
+            border-bottom: 1px solid rgba(0,0,0,0.25);
           }
           th:last-child,
           td:last-child {
             text-align: right;
+          }
+          .btn.delete {
+            border: none;
+            line-height: normal;
+          }
+          .btn.delete:hover svg {
+            fill: #0366d6;
           }
        `}</style>
       </section>

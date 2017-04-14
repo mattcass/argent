@@ -1,13 +1,17 @@
 import React from 'react'
 
 import AppHeader from '../components/head'
-import Login from '../components/Login'
+import Login from '../components/login'
 import Budget from '../components/budget'
 import Spent from '../components/spent'
 import Payments from '../components/payments'
 import Graph from '../components/graph'
+import Pie from '../components/pieChart'
 import base from '../static/base'
 import sampleData from '../static/sampleData'
+
+import BarGraphSvg from '../static/icons/bar-graph.svg';
+import PaperSvg from '../static/icons/paper.svg';
 
 export default class App extends React.Component {
   state = {
@@ -93,15 +97,15 @@ export default class App extends React.Component {
   }
 
   render() {
-    const spentCash = Object.keys(this.state.spent)
-    const total = spentCash.reduce((prevTotal, key) => {
-      const spent = this.state.spent[key].payment
-      return prevTotal - spent
+    let spentCash = Object.keys(this.state.spent)
+    let total = spentCash.reduce((prevTotal, key) => {
+      let spent = this.state.spent[key].payment
+      return +prevTotal - spent
     }, +this.state.budget)
 
-    const spent = spentCash.reduce((sum, key) => {
-      const spent = this.state.spent[key].payment
-      return sum + spent
+    let spent = spentCash.reduce((sum, key) => {
+      let spent = this.state.spent[key].payment
+      return +sum + spent
     }, 0)
 
     const month = new Date().toLocaleString('en-us', { month: 'long'})
@@ -117,45 +121,60 @@ export default class App extends React.Component {
       <div className="app">
         <AppHeader />
         <header className="header">
-          logo?
-          <button className="btn user" onClick={() => this.logout()}>
+          <h1>L&#8217;Argent</h1>
+          <div className="flex">
             <img src={this.state.user.photoURL} />
-            Log Out
-          </button>
+            <button className="btn link" onClick={() => this.logout()}>
+              Log Out
+            </button>
+          </div>
         </header>
         <main className="main">
           <div className="main-content">
             <header className="description">
-              <h1>
-                You have spent ${spent.toFixed(2)} this month.
-              </h1>
               <h2>
-                You still have ${total.toFixed(2)} left the for the month of {month}.
+                You have spent ${spent.toFixed(2)} this month.
               </h2>
+              <h3>
+                You still have ${total.toFixed(2)} left the for the month of {month}.
+              </h3>
             </header>
             <Spent addPayment={this.addPayment}/>
             <Budget budget={this.state.budget} updateBudget={this.updateBudget} />
           </div>
-          <Payments spent={this.state.spent} removePayment={this.removePayment} />
+          <div>
+            <Pie data={[500, 300]}/>
+          </div>
         </main>
-        <aside>
+        <section>
+          <button className="btn icon" type="button">
+            <BarGraphSvg />
+            Graph
+          </button>
+          <button className="btn icon" type="button">
+            <PaperSvg />
+            Table
+          </button>
+          <Payments spent={this.state.spent} removePayment={this.removePayment} />
           <Graph data={this.state.spent} />
-        </aside>
+        </section>
         <style>{`
           * {
             box-sizing: border-box;
           }
           html, body  {
-            padding: 0;
             margin: 0;
-            font-family: -apple-system,BlinkMacSystemFont,avenir
-              next,avenir,helvetica,helvetica neue,ubuntu,roboto,noto,segoe
-              ui,arial,sans-serif;
+            line-height: 1.5;
+            color: #111;
+            font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
           }
-          h1, h2 {
+          h1 {
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 1.1px;
+          }
+          h2, h3 {
             line-height: 1.25;
-            color: #000;
-            font-size: 2em;
             font-size: 24px;
             font-family: Georgia, serif;
             letter-spacing: 1.2px;
@@ -170,9 +189,12 @@ export default class App extends React.Component {
             border-bottom: 1px solid #f9f9f9;
             background: #f1f1f1;
           }
+          .flex {
+            display: flex;
+          }
           img {
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             margin-right: 10px;
             border-radius: 100%;
           }
@@ -180,6 +202,7 @@ export default class App extends React.Component {
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
+            align-items: center;
           }
           .main-content {
             max-width: 600px;
@@ -239,9 +262,20 @@ export default class App extends React.Component {
           .btn:active {
             box-shadow: inset 0 0.15em 0.3em rgba(27,31,35,0.15);
           }
-          .btn.user {
+          .btn.link {
+            border: none;
+            background: transparent;
+          }
+          .btn.icon {
             display: flex;
+            justify-content: center;
             align-items: center;
+            margin-bottom: 10px;
+            margin-left: 10px;
+            min-width: 120px;
+          }
+          .btn.icon svg {
+            margin-right: 10px;
           }
           .payment-list li {
             margin-top: 0.25em;
