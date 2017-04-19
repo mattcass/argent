@@ -1,31 +1,35 @@
+import BudgetForm from './budgetForm'
 import { decimal } from '../static/helpers'
 
 export default class Budget extends React.Component {
+  state = {
+    showBudget: false
+  }
 
-  handleForm = (e) => {
-    e.preventDefault();
-    const userBudget = this.input.value
-    this.props.updateBudget(userBudget);
-    this.form.reset();
+  changeBudget = () => {
+    if ( this.props.budget !== 0 ) {
+      this.setState(prevState => ({
+      showBudget: !prevState.showBudget
+      }));
+    }
   }
 
   render() {
 
+    if ( this.props.budget == 0 || this.state.showBudget ) {
+      return (
+        <section className="budget">
+          <p>Your monthly budget is currently: ${decimal(this.props.budget)}</p>
+          { this.props.budget == 0 ? null : <button type="button" className="btn" onClick={() => this.changeBudget()}>Cancel</button> }
+          <BudgetForm updateBudget={this.props.updateBudget} changeBudget={this.changeBudget} />
+        </section>
+      )
+    }
+
     return (
       <section className="budget">
         <p>Your monthly budget is currently: ${decimal(this.props.budget)}</p>
-        <form action="" ref={(input) => this.form = input} onSubmit={(e) => this.handleForm(e)}>
-          <label htmlFor="budget">
-            What is your new budget?
-          </label>
-          <input
-            type="number"
-            id="budget"
-            placeholder="$0000.00"
-            required
-            ref={(input) => {this.input = input }} />
-          <button type="submit" className="btn">Budget</button>
-        </form>
+        <button type="button" className="btn" onClick={() => this.changeBudget()}>Update Budget</button>
       </section>
     )
 

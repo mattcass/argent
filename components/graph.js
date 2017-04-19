@@ -73,7 +73,7 @@ export default class Graph extends React.Component {
    const y = d3.scaleLinear().domain([0, d3.max(data, function(d) { return d.payment  + 50})]).range([(this.props.height - this.props.margin.bottom) , 0])
 
    // construct a new line generator
-   const line = d3.line().x(function (d) { return x(d.formatedDate) }).y(function(d) { return y(d.payment) }).curve(d3.curveMonotoneX)
+   const line = d3.line().x(function (d) { return x(d.formatedDate) }).y(function(d) { return y(d.payment) })
 
    // construct associated data points
    const circles = data.map(function(d, i) {

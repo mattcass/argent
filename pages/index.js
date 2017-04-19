@@ -74,7 +74,7 @@ export default class App extends React.Component {
 
   updateBudget = (userBudget) => {
     this.setState({
-      budget: userBudget
+      budget: parseFloat(userBudget)
     })
   }
 
@@ -133,6 +133,7 @@ export default class App extends React.Component {
         <main className="main">
           <div className="main-content">
             <header className="description">
+              <Budget budget={this.state.budget} updateBudget={this.updateBudget} />
               <h2>
                 You have spent ${decimal(spent)} this month.
               </h2>
@@ -141,7 +142,6 @@ export default class App extends React.Component {
               </h3>
             </header>
             <Spent addPayment={this.addPayment}/>
-            <Budget budget={this.state.budget} updateBudget={this.updateBudget} />
           </div>
           <div>
             <Pie data={[+decimal(spent), +decimal(total)]}/>
@@ -284,6 +284,9 @@ export default class App extends React.Component {
           }
           .payment-amount {
             min-width: 150px;
+          }
+          .mt1 {
+            margin-top: 1em;
           }
        `}</style>
       </div>
