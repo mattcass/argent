@@ -5,16 +5,13 @@ export default class BudgetForm extends React.Component {
     const userBudget = this.input.value
     this.props.updateBudget(userBudget);
     this.form.reset();
-    this.props.changeBudget()
+    this.props.showHide()
   }
 
   render() {
 
     return (
       <form className="mt1" action="" ref={(input) => this.form = input} onSubmit={(e) => this.handleForm(e)}>
-        <label htmlFor="budget">
-          What is your budget for the month?
-        </label>
         <input
           type="number"
           id="budget"

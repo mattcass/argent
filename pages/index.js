@@ -19,7 +19,8 @@ export default class App extends React.Component {
     spent: {},
     budget: 0,
     uid: null,
-    user: null
+    user: null,
+    dataViz: true
   }
 
   componentWillMount() {
@@ -97,6 +98,12 @@ export default class App extends React.Component {
     })
   }
 
+  toggleDataViz = (boolean) => {
+    this.setState({
+      dataViz: boolean
+    })
+  }
+
   render() {
     let spentCash = Object.keys(this.state.spent)
     let total = spentCash.reduce((prevTotal, key) => {
@@ -148,16 +155,22 @@ export default class App extends React.Component {
           </div>
         </main>
         <section>
-          <button className="btn icon" type="button">
-            <BarGraphSvg />
-            Graph
-          </button>
-          <button className="btn icon" type="button">
-            <PaperSvg />
-            Table
-          </button>
-          <Payments spent={this.state.spent} removePayment={this.removePayment} />
-          <Graph data={this.state.spent} />
+          <div className="tabs">
+            <button className="btn icon" type="button" onClick={() => this.toggleDataViz(true)}>
+              <BarGraphSvg />
+              Graph
+            </button>
+            <button className="btn icon" type="button" onClick={() => this.toggleDataViz(false)}>
+              <PaperSvg />
+              Table
+            </button>
+          </div>
+          {
+            this.state.dataViz == 0 ?
+            <Payments spent={this.state.spent} removePayment={this.removePayment} />
+            :
+            <Graph data={this.state.spent} />
+          }
         </section>
         <style>{`
           * {
@@ -208,6 +221,10 @@ export default class App extends React.Component {
           .main-content {
             max-width: 600px;
             padding: 2em 4em;
+          }
+          .tabs {
+            display: flex;
+            padding-left: 4em;
           }
           .description {
             margin: 2em 0 0 0;
@@ -271,9 +288,14 @@ export default class App extends React.Component {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 10px;
-            margin-left: 10px;
             min-width: 120px;
+            padding: 1em 2em;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+            border-bottom: transparent;
+          }
+          .btn.icon:last-child {
+            margin-left: 10px;
           }
           .btn.icon svg {
             margin-right: 10px;
