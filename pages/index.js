@@ -166,10 +166,10 @@ export default class App extends React.Component {
             </button>
           </div>
           {
-            this.state.dataViz == 0 ?
-            <Payments spent={this.state.spent} removePayment={this.removePayment} />
-            :
+            this.state.dataViz ?
             <Graph data={this.state.spent} />
+            :
+            <Payments spent={this.state.spent} removePayment={this.removePayment} />
           }
         </section>
         <style>{`
