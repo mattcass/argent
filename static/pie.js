@@ -17,9 +17,14 @@ d3Pie.init = (el, props, data) => {
     .attr('class', 'pie')
     .attr('width', props.width)
     .attr('height', props.height)
-    .append("g")
+
+
+    svg.append("g")
       .attr('class', 'arcs')
       .attr("transform", "translate(" + props.width / 2 + "," + props.height / 2 + ")");
+
+    svg.append('g')
+      .attr('class', 'text')
 
     d3Pie.render(el, props, data)
 }
@@ -63,6 +68,18 @@ d3Pie.render = (el, props, data) => {
         return arc(i(t));
     };
   }
+
+  var text = d3.select(el).select('.text').selectAll('text').data(['spent', 'budget'])
+
+  text.enter().append('text')
+    .text(function(d) {
+      return d
+    })
+    .attr("transform", "translate(10,20)")
+    .attr("x", 5)   //Move the text from the start angle of the arc
+	  .attr("dy", 18)
+    .attr('class', 'label')
+
 }
 
 export default d3Pie

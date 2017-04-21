@@ -16,7 +16,7 @@ import PaperSvg from '../static/icons/paper.svg';
 
 export default class App extends React.Component {
   state = {
-    spent: {},
+    spent: {} || 0,
     budget: 0,
     uid: null,
     user: null,

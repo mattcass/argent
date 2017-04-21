@@ -5,6 +5,5 @@ export function dateString() {
 }
 
 export function decimal(number) {
-  var number = +number
-  return number.toFixed(2)
+  return parseFloat(number).toFixed(2)
 }

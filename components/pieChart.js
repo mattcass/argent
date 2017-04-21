@@ -44,7 +44,10 @@ export default class Pie extends React.Component {
         }
         .arcs path {
           stroke: #fff;
-          stroke-width: 3px;
+          stroke-width: 2px;
+        }
+        .label {
+          fill: #000;
         }
      `}</style>
       </div>
