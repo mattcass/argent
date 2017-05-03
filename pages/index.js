@@ -9,7 +9,7 @@ import Graph from '../components/graph'
 import Pie from '../components/pieChart'
 import base from '../static/base'
 import sampleData from '../static/sampleData'
-import { isThisMonth, monthRemainingCash, monthSpentCash } from '../static/helpers'
+import { monthRemainingCash, monthSpentCash } from '../static/helpers'
 
 import BarGraphSvg from '../static/icons/bar-graph.svg';
 import PaperSvg from '../static/icons/paper.svg';
