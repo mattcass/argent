@@ -9,7 +9,7 @@ import Graph from '../components/graph'
 import Pie from '../components/pieChart'
 import base from '../static/base'
 import sampleData from '../static/sampleData'
-import { decimal } from '../static/helpers'
+import { isThisMonth, monthRemainingCash, monthSpentCash } from '../static/helpers'
 
 import BarGraphSvg from '../static/icons/bar-graph.svg';
 import PaperSvg from '../static/icons/paper.svg';
@@ -29,7 +29,14 @@ export default class App extends React.Component {
         this.authHandler(null, {user});
       }
     })
+
+    // filter data by month
+    // need to create a new state component which will be passed to children
+    // instead of blowing away entire state Data for previous months
+    this.filterDataByMonth()
   }
+
+
 
   componentWillUnmount() {
     base.removeBinding(this.spentRef)
@@ -73,6 +80,21 @@ export default class App extends React.Component {
     })
   }
 
+  filterDataByMonth = () => {
+    const month = new Date().toLocaleString('en-us', { month: 'short'})
+    const spentThisMonth = {...this.state.spent}
+    const newArr = Object.keys({...this.state.spent}).map( (val, index, arr) => {
+      console.log(spent, month)
+      if ( spentThisMonth[val].date.split(' ')[1] !== month) {
+        spentThisMonth[val] = null
+      }
+      return arr
+    })
+    this.setState({
+      spent: spentThisMonth
+    })
+  }
+
   updateBudget = (userBudget) => {
     this.setState({
       budget: parseFloat(userBudget)
@@ -105,18 +127,9 @@ export default class App extends React.Component {
   }
 
   render() {
-    let spentCash = Object.keys(this.state.spent)
-    let total = spentCash.reduce((prevTotal, key) => {
-      let spent = this.state.spent[key].payment
-      return prevTotal - spent
-    }, this.state.budget)
-
-    let spent = spentCash.reduce((sum, key) => {
-      let spent = this.state.spent[key].payment
-      return sum + spent
-    }, 0)
-
     const month = new Date().toLocaleString('en-us', { month: 'long'})
+    const spent = monthSpentCash(this.state.spent)
+    const total = monthRemainingCash(this.state.spent, this.state.budget)
 
     // check if they are logged in!
     if ( !this.state.uid ) {
@@ -142,16 +155,16 @@ export default class App extends React.Component {
             <header className="description">
               <Budget budget={this.state.budget} updateBudget={this.updateBudget} />
               <h2>
-                You have spent ${decimal(spent)} this month.
+                You have spent ${spent} this month.
               </h2>
               <h3>
-                You still have ${decimal(total)} left the for the month of {month}.
+                You still have ${total} left the for the month of {month}.
               </h3>
             </header>
             <Spent addPayment={this.addPayment}/>
           </div>
           <div>
-            <Pie data={[+decimal(spent), +decimal(total)]}/>
+            <Pie data={[spent, total]}/>
           </div>
         </main>
         <section>
