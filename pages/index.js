@@ -1,15 +1,16 @@
-import React from 'react'
+import React from 'react';
 
-import AppHeader from '../components/head'
-import Login from '../components/login'
-import Budget from '../components/budget'
-import Spent from '../components/spent'
-import Payments from '../components/payments'
-import Graph from '../components/graph'
-import Pie from '../components/pieChart'
-import base from '../static/base'
-import sampleData from '../static/sampleData'
-import { decimal } from '../static/helpers'
+import AppHeader from '../components/head';
+import Login from '../components/login';
+import Budget from '../components/budget';
+import Spent from '../components/spent';
+import Payments from '../components/payments';
+import Graph from '../components/graph';
+import Pie from '../components/pieChart';
+import Line from '../components/lineChart';
+import base from '../static/base';
+import sampleData from '../static/sampleData';
+import { decimal } from '../static/helpers';
 
 import BarGraphSvg from '../static/icons/bar-graph.svg';
 import PaperSvg from '../static/icons/paper.svg';
@@ -20,109 +21,103 @@ export default class App extends React.Component {
     budget: 0,
     uid: null,
     user: null
-  }
+  };
 
   componentWillMount() {
-    base.onAuth((user) => {
+    base.onAuth(user => {
       if (user) {
-        this.authHandler(null, {user});
+        this.authHandler(null, { user });
       }
-    })
+    });
   }
 
   componentWillUnmount() {
-    base.removeBinding(this.spentRef)
-    base.removeBinding(this.budgetRef)
+    base.removeBinding(this.spentRef);
+    base.removeBinding(this.budgetRef);
   }
 
-  authenticate = (provider) => {
-    base.authWithOAuthPopup(provider, this.authHandler)
-  }
+  authenticate = provider => {
+    base.authWithOAuthPopup(provider, this.authHandler);
+  };
 
   authHandler = (err, authData) => {
     if (err) {
-      console.log(err)
-      return
+      console.log(err);
+      return;
     }
 
     this.setState({
       user: authData.user,
       uid: authData.user.uid
-    })
+    });
 
-    this.spentRef = base.syncState(`users/${this.state.uid}/spent/`,
-      {
-        context: this,
-        state: 'spent'
-      }
-    )
-    this.budgetRef = base.syncState(`users/${this.state.uid}/budget/`,
-      {
-        context: this,
-        state: 'budget'
-      }
-    )
-  }
+    this.spentRef = base.syncState(`users/${this.state.uid}/spent/`, {
+      context: this,
+      state: 'spent'
+    });
+    this.budgetRef = base.syncState(`users/${this.state.uid}/budget/`, {
+      context: this,
+      state: 'budget'
+    });
+  };
 
   logout = () => {
-    base.unauth()
+    base.unauth();
     this.setState({
       owner: null,
       uid: null
-    })
-  }
+    });
+  };
 
-  updateBudget = (userBudget) => {
+  updateBudget = userBudget => {
     this.setState({
       budget: userBudget
-    })
-  }
+    });
+  };
 
-  removePayment = (key) => {
+  removePayment = key => {
     if (confirm('Are you sure you would like to remove this payment?')) {
-      const spent = {...this.state.spent}
+      const spent = { ...this.state.spent };
       spent[key] = null;
       this.setState({
         spent
-      })
+      });
     }
-  }
+  };
 
-  addPayment = (payment) => {
-    const spent = {...this.state.spent}
+  addPayment = payment => {
+    const spent = { ...this.state.spent };
     const timestamp = Date.now();
     spent[`${timestamp}`] = payment;
     this.setState({
       spent
-    })
-  }
+    });
+  };
 
   render() {
-    let spentCash = Object.keys(this.state.spent)
+    let spentCash = Object.keys(this.state.spent);
     let total = spentCash.reduce((prevTotal, key) => {
-      let spent = this.state.spent[key].payment
-      return prevTotal - spent
-    }, this.state.budget)
+      let spent = this.state.spent[key].payment;
+      return prevTotal - spent;
+    }, this.state.budget);
 
     let spent = spentCash.reduce((sum, key) => {
-      let spent = this.state.spent[key].payment
-      return sum + spent
-    }, 0)
+      let spent = this.state.spent[key].payment;
+      return sum + spent;
+    }, 0);
 
-    const month = new Date().toLocaleString('en-us', { month: 'long'})
+    const month = new Date().toLocaleString('en-us', { month: 'long' });
 
     // check if they are logged in!
-    if ( !this.state.uid ) {
-      return (
-        <Login authenticate={this.authenticate}/>
-      )
+    if (!this.state.uid) {
+      return <Login authenticate={this.authenticate} />;
     }
 
     return (
       <div className="app">
         <AppHeader />
         <header className="header">
-          <h1>L&#8217;Argent</h1>
+          <h1>L’Argent</h1>
           <div className="flex">
             <img src={this.state.user.photoURL} />
             <button className="btn link" onClick={() => this.logout()}>
@@ -137,14 +132,23 @@ export default class App extends React.Component {
                 You have spent ${decimal(spent)} this month.
               </h2>
               <h3>
-                You still have ${decimal(total)} left the for the month of {month}.
+                You still have $
+                {decimal(total)}
+                {' '}
+                left the for the month of
+                {' '}
+                {month}
+                .
               </h3>
             </header>
-            <Spent addPayment={this.addPayment}/>
-            <Budget budget={this.state.budget} updateBudget={this.updateBudget} />
+            <Spent addPayment={this.addPayment} />
+            <Budget
+              budget={this.state.budget}
+              updateBudget={this.updateBudget}
+            />
           </div>
           <div>
-            <Pie data={[+decimal(spent), +decimal(total)]}/>
+            <Pie data={[+decimal(spent), +decimal(total)]} />
           </div>
         </main>
         <section>
@@ -156,7 +160,10 @@ export default class App extends React.Component {
             <PaperSvg />
             Table
           </button>
-          <Payments spent={this.state.spent} removePayment={this.removePayment} />
+          <Payments
+            spent={this.state.spent}
+            removePayment={this.removePayment}
+          />
           <Graph data={this.state.spent} />
         </section>
         <style>{`
@@ -230,6 +237,9 @@ export default class App extends React.Component {
             border-radius: 0.25em;
             border: 1px solid rgba(27,31,35,0.2);
           }
+          input:invalid {
+            box-shadow: none;
+          }
           form {
             display: flex;
             flex-wrap: wrap;
@@ -287,6 +297,6 @@ export default class App extends React.Component {
           }
        `}</style>
       </div>
-    )
+    );
   }
 }
