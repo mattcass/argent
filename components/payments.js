@@ -39,8 +39,6 @@ export default class Payments extends React.Component {
           .payments {
             border-top: 1px solid rgba(0,0,0,0.25);
             padding: 2em;
-            overflow: auto;
-            max-height: 200px;
           }
           table {
             width: 100%;

@@ -7,20 +7,20 @@ import Spent from '../components/spent';
 import Payments from '../components/payments';
 import Graph from '../components/graph';
 import Pie from '../components/pieChart';
-import Line from '../components/lineChart';
 import base from '../static/base';
 import sampleData from '../static/sampleData';
-import { decimal } from '../static/helpers';
+import { monthRemainingCash, monthSpentCash } from '../static/helpers';
 
 import BarGraphSvg from '../static/icons/bar-graph.svg';
 import PaperSvg from '../static/icons/paper.svg';
 
 export default class App extends React.Component {
   state = {
-    spent: {},
+    spent: {} || 0,
     budget: 0,
     uid: null,
-    user: null
+    user: null,
+    dataViz: true
   };
 
   componentWillMount() {
@@ -29,6 +29,11 @@ export default class App extends React.Component {
         this.authHandler(null, { user });
       }
     });
+
+    // filter data by month
+    // need to create a new state component which will be passed to children
+    // instead of blowing away entire state Data for previous months
+    this.filterDataByMonth();
   }
 
   componentWillUnmount() {
@@ -69,9 +74,26 @@ export default class App extends React.Component {
     });
   };
 
+  filterDataByMonth = () => {
+    const month = new Date().toLocaleString('en-us', { month: 'short' });
+    const spentThisMonth = { ...this.state.spent };
+    const newArr = Object.keys({
+      ...this.state.spent
+    }).map((val, index, arr) => {
+      console.log(spent, month);
+      if (spentThisMonth[val].date.split(' ')[1] !== month) {
+        spentThisMonth[val] = null;
+      }
+      return arr;
+    });
+    this.setState({
+      spent: spentThisMonth
+    });
+  };
+
   updateBudget = userBudget => {
     this.setState({
-      budget: userBudget
+      budget: parseFloat(userBudget)
     });
   };
 
@@ -94,19 +116,16 @@ export default class App extends React.Component {
     });
   };
 
+  toggleDataViz = boolean => {
+    this.setState({
+      dataViz: boolean
+    });
+  };
+
   render() {
-    let spentCash = Object.keys(this.state.spent);
-    let total = spentCash.reduce((prevTotal, key) => {
-      let spent = this.state.spent[key].payment;
-      return prevTotal - spent;
-    }, this.state.budget);
-
-    let spent = spentCash.reduce((sum, key) => {
-      let spent = this.state.spent[key].payment;
-      return sum + spent;
-    }, 0);
-
     const month = new Date().toLocaleString('en-us', { month: 'long' });
+    const spent = monthSpentCash(this.state.spent);
+    const total = monthRemainingCash(this.state.spent, this.state.budget);
 
     // check if they are logged in!
     if (!this.state.uid) {
@@ -128,43 +147,48 @@ export default class App extends React.Component {
         <main className="main">
           <div className="main-content">
             <header className="description">
+              <Budget
+                budget={this.state.budget}
+                updateBudget={this.updateBudget}
+              />
               <h2>
-                You have spent ${decimal(spent)} this month.
+                You have spent ${spent} this month.
               </h2>
               <h3>
-                You still have $
-                {decimal(total)}
-                {' '}
-                left the for the month of
-                {' '}
-                {month}
-                .
+                You still have ${total} left the for the month of {month}.
               </h3>
             </header>
             <Spent addPayment={this.addPayment} />
-            <Budget
-              budget={this.state.budget}
-              updateBudget={this.updateBudget}
-            />
           </div>
           <div>
-            <Pie data={[+decimal(spent), +decimal(total)]} />
+            <Pie data={[spent, total]} />
           </div>
         </main>
         <section>
-          <button className="btn icon" type="button">
-            <BarGraphSvg />
-            Graph
-          </button>
-          <button className="btn icon" type="button">
-            <PaperSvg />
-            Table
-          </button>
-          <Payments
-            spent={this.state.spent}
-            removePayment={this.removePayment}
-          />
-          <Graph data={this.state.spent} />
+          <div className="tabs">
+            <button
+              className="btn icon"
+              type="button"
+              onClick={() => this.toggleDataViz(true)}
+            >
+              <BarGraphSvg />
+              Graph
+            </button>
+            <button
+              className="btn icon"
+              type="button"
+              onClick={() => this.toggleDataViz(false)}
+            >
+              <PaperSvg />
+              Table
+            </button>
+          </div>
+          {this.state.dataViz
+            ? <Graph data={this.state.spent} />
+            : <Payments
+                spent={this.state.spent}
+                removePayment={this.removePayment}
+              />}
         </section>
         <style>{`
           * {
@@ -215,6 +239,10 @@ export default class App extends React.Component {
           .main-content {
             max-width: 600px;
             padding: 2em 4em;
+          }
+          .tabs {
+            display: flex;
+            padding-left: 4em;
           }
           .description {
             margin: 2em 0 0 0;
@@ -281,9 +309,14 @@ export default class App extends React.Component {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 10px;
-            margin-left: 10px;
             min-width: 120px;
+            padding: 1em 2em;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+            border-bottom: transparent;
+          }
+          .btn.icon:last-child {
+            margin-left: 10px;
           }
           .btn.icon svg {
             margin-right: 10px;
@@ -294,6 +327,9 @@ export default class App extends React.Component {
           }
           .payment-amount {
             min-width: 150px;
+          }
+          .mt1 {
+            margin-top: 1em;
           }
        `}</style>
       </div>

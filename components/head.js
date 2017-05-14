@@ -5,8 +5,8 @@ const AppHeader = () => {
       <Head>
         <title>L&#8217;argent</title>
         <meta name="theme-color" content="#333333" />
-        <meta name="description" content="cash rules everything around me"/>
-        <meta viewport="viewport" contnet="initial-scale=1.0 width=device-width" />
+        <meta name="description" content="cash rules everything around me" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="shortcut icon" type="image/png" href="static/icons/globe-favicon.png" />
       </Head>
   )
