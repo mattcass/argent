@@ -7,6 +7,7 @@ import Spent from '../components/spent';
 import Payments from '../components/payments';
 import Graph from '../components/graph';
 import Pie from '../components/pieChart';
+import Line from '../components/lineChart';
 import base from '../static/base';
 import sampleData from '../static/sampleData';
 import { monthRemainingCash, monthSpentCash } from '../static/helpers';

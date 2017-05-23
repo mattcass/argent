@@ -1,11 +1,12 @@
-import AppHeader from '../components/head'
+import PropTypes from 'prop-types';
+import AppHeader from '../components/head';
 import GithubSvg from '../static/icons/github.svg';
 
-const Login = ({authenticate}) => {
+const Login = ({ authenticate }) => {
   return (
     <div className="page">
       <AppHeader />
-      <h1>L&#8217;Argent</h1>
+      <h1>L’Argent</h1>
       <h2>Login to manage your monthly budget</h2>
       <button className="btn icon" onClick={() => authenticate('github')}>
         <GithubSvg />
@@ -65,11 +66,11 @@ const Login = ({authenticate}) => {
           fill: #fff;
      `}</style>
     </div>
-  )
-}
+  );
+};
 
-Login.propTypes = {
-  authenticate: React.PropTypes.func.isRequired
-}
+Login.PropTypes = {
+  authenticate: PropTypes.func.isRequired
+};
 
-export default Login
+export default Login;
