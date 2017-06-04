@@ -1,157 +1,156 @@
-import React from 'react';
+import React from 'react'
 
-import AppHeader from '../components/head';
-import Login from '../components/login';
-import Budget from '../components/budget';
-import Spent from '../components/spent';
-import Payments from '../components/payments';
-import Graph from '../components/graph';
-import Pie from '../components/pieChart';
-import Line from '../components/lineChart';
-import base from '../static/base';
-import sampleData from '../static/sampleData';
-import { monthRemainingCash, monthSpentCash } from '../static/helpers';
+import AppHeader from '../components/head'
+import Login from '../components/login'
+import Budget from '../components/budget'
+import Spent from '../components/spent'
+import Payments from '../components/payments'
+import Graph from '../components/graph'
+import Pie from '../components/pieChart'
+import base from '../static/base'
 
-import BarGraphSvg from '../static/icons/bar-graph.svg';
-import PaperSvg from '../static/icons/paper.svg';
+import sampleData from '../static/sampleData'
+import { monthRemainingCash, monthSpentCash } from '../static/helpers'
+
+import BarGraphSvg from '../static/icons/bar-graph.svg'
+import PaperSvg from '../static/icons/paper.svg'
+import HeadSvg from '../static/icons/head.svg'
+import GithubSvg from '../static/icons/github.svg'
+
+const initialState = {
+  spent: {},
+  budget: 0,
+  uid: null,
+  user: null
+}
 
 export default class App extends React.Component {
-  state = {
-    spent: {} || 0,
-    budget: 0,
-    uid: null,
-    user: null,
-    dataViz: true
-  };
+  constructor() {
+    super()
+    let state = { ...initialState }
+    this.state = state
+  }
 
   componentWillMount() {
     base.onAuth(user => {
       if (user) {
-        this.authHandler(null, { user });
+        this.authHandler(null, { user })
       }
-    });
-
-    // filter data by month
-    // need to create a new state component which will be passed to children
-    // instead of blowing away entire state Data for previous months
-    this.filterDataByMonth();
+    })
   }
 
   componentWillUnmount() {
-    base.removeBinding(this.spentRef);
-    base.removeBinding(this.budgetRef);
+    base.removeBinding(this.spentRef)
+    base.removeBinding(this.budgetRef)
+  }
+
+  filterDataByMonth = () => {
+    const month = new Date().toLocaleString('en-us', { month: 'short' })
+    const spent = { ...this.state.spent }
+    const newArr = Object.keys({
+      ...this.state.spent
+    }).map((val, index, arr) => {
+      if (spent[val].date.split(' ')[1] !== month) {
+        spent[val] = null
+      }
+      return arr
+    })
+    this.setState({
+      spent
+    })
   }
 
   authenticate = provider => {
-    base.authWithOAuthPopup(provider, this.authHandler);
-  };
+    base.authWithOAuthPopup(provider, this.authHandler)
+  }
 
   authHandler = (err, authData) => {
     if (err) {
-      console.log(err);
-      return;
+      console.log(err)
+      return
     }
 
     this.setState({
       user: authData.user,
       uid: authData.user.uid
-    });
+    })
 
     this.spentRef = base.syncState(`users/${this.state.uid}/spent/`, {
       context: this,
       state: 'spent'
-    });
+    })
     this.budgetRef = base.syncState(`users/${this.state.uid}/budget/`, {
       context: this,
       state: 'budget'
-    });
-  };
+    })
+  }
 
   logout = () => {
-    base.unauth();
-    this.setState({
-      owner: null,
-      uid: null
-    });
-  };
+    base.unauth()
+    this.reset()
+  }
 
-  filterDataByMonth = () => {
-    const month = new Date().toLocaleString('en-us', { month: 'short' });
-    const spentThisMonth = { ...this.state.spent };
-    const newArr = Object.keys({
-      ...this.state.spent
-    }).map((val, index, arr) => {
-      console.log(spent, month);
-      if (spentThisMonth[val].date.split(' ')[1] !== month) {
-        spentThisMonth[val] = null;
-      }
-      return arr;
-    });
+  reset = () => {
     this.setState({
-      spent: spentThisMonth
-    });
-  };
+      uid: null,
+      user: null
+    })
+    location.reload()
+  }
 
   updateBudget = userBudget => {
     this.setState({
       budget: parseFloat(userBudget)
-    });
-  };
+    })
+  }
 
   removePayment = key => {
     if (confirm('Are you sure you would like to remove this payment?')) {
-      const spent = { ...this.state.spent };
-      spent[key] = null;
+      const spent = { ...this.state.spent }
+      spent[key] = null
       this.setState({
         spent
-      });
+      })
     }
-  };
+  }
 
   addPayment = payment => {
-    const spent = { ...this.state.spent };
-    const timestamp = Date.now();
-    spent[`${timestamp}`] = payment;
+    const spent = { ...this.state.spent }
+    const timestamp = Date.now()
+    spent[`${timestamp}`] = payment
     this.setState({
       spent
-    });
-  };
-
-  toggleDataViz = boolean => {
-    this.setState({
-      dataViz: boolean
-    });
-  };
+    })
+  }
 
   render() {
-    const month = new Date().toLocaleString('en-us', { month: 'long' });
-    const spent = monthSpentCash(this.state.spent);
-    const total = monthRemainingCash(this.state.spent, this.state.budget);
-
-    // check if they are logged in!
-    if (!this.state.uid) {
-      return <Login authenticate={this.authenticate} />;
-    }
+    const month = new Date().toLocaleString('en-us', { month: 'long' })
+    const spent = monthSpentCash(this.state.spent)
+    const total = monthRemainingCash(this.state.spent, this.state.budget)
 
     return (
       <div className="app">
         <AppHeader />
         <header className="header">
           <h1>L’Argent</h1>
-          <div className="flex">
-            <img src={this.state.user.photoURL} />
-            <button className="btn link" onClick={() => this.logout()}>
-              Log Out
-            </button>
-          </div>
+          {!this.state.uid
+            ? <button
+                className="btn icon"
+                onClick={() => this.authenticate('github')}
+              >
+                <GithubSvg />
+                Login with Github
+              </button>
+            : <div className="flex">
+                <img src={this.state.user.photoURL} />
+                <button className="btn icon" onClick={() => this.logout()}>
+                  Log Out
+                </button>
+              </div>}
         </header>
         <main className="main">
           <div className="main-content">
             <header className="description">
-              <Budget
-                budget={this.state.budget}
-                updateBudget={this.updateBudget}
-              />
               <h2>
                 You have spent ${spent} this month.
               </h2>
@@ -160,36 +159,22 @@ export default class App extends React.Component {
               </h3>
             </header>
             <Spent addPayment={this.addPayment} />
+            <Budget
+              budget={this.state.budget}
+              updateBudget={this.updateBudget}
+            />
           </div>
-          <div>
-            <Pie data={[spent, total]} />
-          </div>
+          <Pie data={[spent, total]} />
         </main>
+        <aside>
+          <Payments
+            className="payments"
+            spent={this.state.spent}
+            removePayment={this.removePayment}
+          />
+        </aside>
         <section>
-          <div className="tabs">
-            <button
-              className="btn icon"
-              type="button"
-              onClick={() => this.toggleDataViz(true)}
-            >
-              <BarGraphSvg />
-              Graph
-            </button>
-            <button
-              className="btn icon"
-              type="button"
-              onClick={() => this.toggleDataViz(false)}
-            >
-              <PaperSvg />
-              Table
-            </button>
-          </div>
-          {this.state.dataViz
-            ? <Graph data={this.state.spent} />
-            : <Payments
-                spent={this.state.spent}
-                removePayment={this.removePayment}
-              />}
+          <Graph data={this.state.spent} />
         </section>
         <style>{`
           * {
@@ -200,6 +185,8 @@ export default class App extends React.Component {
             line-height: 1.5;
             color: #111;
             font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            overflow-x: hidden;
+            background: #fff;
           }
           h1 {
             font-weight: 700;
@@ -208,7 +195,7 @@ export default class App extends React.Component {
           }
           h2, h3 {
             line-height: 1.25;
-            font-size: 24px;
+            font-size: 29px;
             font-family: Georgia, serif;
             letter-spacing: 1.2px;
             display: inline;
@@ -220,26 +207,34 @@ export default class App extends React.Component {
             align-items: center;
             padding: 0.5em 4em;
             border-bottom: 1px solid #f9f9f9;
-            background: #f1f1f1;
+            background: #31343D;
+            color: white;
+            @media (min-width:500px){
+              padding: 0.5em 1em;
+            }
           }
           .flex {
             display: flex;
           }
           img {
-            width: 40px;
-            height: 40px;
+            width: 80px;
+            height: 80px;
             margin-right: 10px;
             border-radius: 100%;
+            margin-bottom: -50px;
           }
           .main {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             flex-wrap: wrap;
             align-items: center;
+            max-width: 1200px;
+            padding: 1em;
+            margin: 0 auto;
+            margin-top: 2em;
           }
           .main-content {
             max-width: 600px;
-            padding: 2em 4em;
           }
           .tabs {
             display: flex;
@@ -308,19 +303,30 @@ export default class App extends React.Component {
           }
           .btn.icon {
             display: flex;
-            justify-content: center;
             align-items: center;
-            min-width: 120px;
-            padding: 1em 2em;
-            border-bottom-right-radius: 0;
-            border-bottom-left-radius: 0;
-            border-bottom: transparent;
-          }
-          .btn.icon:last-child {
-            margin-left: 10px;
+            color: #fff;
+            background: #31343D;
+            padding: 6px 12px;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 20px;
           }
           .btn.icon svg {
             margin-right: 10px;
+            width: 16px;
+            fill: #fff;
+          }
+          .btn.icon:hover,
+          .btn.icon:focus {
+            background-color: #fff;
+            color: #31343D;
+          }
+          .btn.icon:hover svg,
+          .btn.icon:focus svg {
+            fill: #31343D;
+          }
+          .btn.icon:active {
+            box-shadow: inset 0 0.15em 0.3em rgba(27,31,35,0.15);
           }
           .payment-list li {
             margin-top: 0.25em;
@@ -329,11 +335,25 @@ export default class App extends React.Component {
           .payment-amount {
             min-width: 150px;
           }
+          .payments {
+            display: none;
+
+          }
           .mt1 {
             margin-top: 1em;
           }
+          @media (max-width:500px){
+            .header {
+              padding: 0.5em 1em;
+            }
+            img {
+              width: 40px;
+              height: 40px;
+              margin-bottom: 0;
+            }
+          }
        `}</style>
       </div>
-    );
+    )
   }
 }

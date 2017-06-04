@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import AppHeader from '../components/head';
 import GithubSvg from '../static/icons/github.svg';
 
-const Login = ({ authenticate }) => {
+const Login = ({ authenticate, fakeData }) => {
   return (
     <div className="page">
       <AppHeader />
@@ -11,6 +11,9 @@ const Login = ({ authenticate }) => {
       <button className="btn icon" onClick={() => authenticate('github')}>
         <GithubSvg />
         Login with Github
+      </button>
+      <button className="btn" onClick={() => fakeData()}>
+        Go To App
       </button>
       <style>{`
         .page {

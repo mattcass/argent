@@ -1,11 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import TrashSvg from '../static/icons/trash.svg';
-import { decimal } from '../static/helpers';
+import React from 'react'
+import PropTypes from 'prop-types'
+import TrashSvg from '../static/icons/trash.svg'
+import { decimal } from '../static/helpers'
 
 export default class Payments extends React.Component {
   renderPaymentList = key => {
-    const spent = this.props.spent[key];
+    const spent = this.props.spent[key]
     const button = (
       <button
         type="button"
@@ -14,15 +14,15 @@ export default class Payments extends React.Component {
       >
         <TrashSvg />
       </button>
-    );
+    )
     return (
       <tr key={key}>
         <td><b>${+decimal(spent.payment)}</b></td>
         <td>{spent.date}</td>
         <td>{button}</td>
       </tr>
-    );
-  };
+    )
+  }
 
   render() {
     return (
@@ -43,6 +43,7 @@ export default class Payments extends React.Component {
           .payments {
             border-top: 1px solid rgba(0,0,0,0.25);
             padding: 2em;
+            overflow-x: scroll;
           }
           table {
             width: 100%;
@@ -67,11 +68,11 @@ export default class Payments extends React.Component {
           }
        `}</style>
       </section>
-    );
+    )
   }
 }
 
 Payments.PropTypes = {
   spent: PropTypes.object.isRequired,
   removePayment: PropTypes.func.isRequired
-};
+}

@@ -1,17 +1,17 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { dateString } from '../static/helpers';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { dateString } from '../static/helpers'
 
 export default class Spent extends React.Component {
   handleForm = e => {
-    e.preventDefault();
+    e.preventDefault()
     const payment = {
       date: new Date().toString().slice(0, -15),
       payment: +this.input.value
-    };
-    this.props.addPayment(payment);
-    this.form.reset();
-  };
+    }
+    this.props.addPayment(payment)
+    this.form.reset()
+  }
   render() {
     return (
       <section className="spent">
@@ -29,17 +29,17 @@ export default class Spent extends React.Component {
             id="spent"
             placeholder="$000.00"
             ref={input => {
-              this.input = input;
+              this.input = input
             }}
             required
           />
           <button type="submit" className="btn">Spent</button>
         </form>
       </section>
-    );
+    )
   }
 }
 
 Spent.PropTypes = {
   addPayment: PropTypes.func.isRequired
-};
+}

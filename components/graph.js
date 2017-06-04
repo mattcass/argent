@@ -1,6 +1,6 @@
-import PropTypes from 'prop-types';
-import * as d3 from 'd3';
-const window = window || global;
+import PropTypes from 'prop-types'
+import * as d3 from 'd3'
+const window = window || global
 
 export default class Graph extends React.Component {
   static defaultProps = {
@@ -8,32 +8,32 @@ export default class Graph extends React.Component {
     height: 400,
     chartId: 'chart',
     margin: { top: 0, right: 50, bottom: 20, left: 50 }
-  };
+  }
 
   state = {
     width: this.props.width
-  };
+  }
 
   componentWillUnmount() {
     // window.removeEventListener('resize', () => this.updateSize())
   }
 
   componentDidUpdate() {
-    this.renderAxis(Object.values(this.props.data));
+    this.renderAxis(Object.values(this.props.data))
   }
 
   componentDidMount() {
-    this.renderAxis(Object.values(this.props.data));
-    this.updateSize();
-    window.addEventListener('resize', () => this.updateSize());
+    this.renderAxis(Object.values(this.props.data))
+    this.updateSize()
+    window.addEventListener('resize', () => this.updateSize())
   }
 
   updateSize = () => {
-    var nodeWidth = this.node.offsetWidth;
+    var containerWidth = this.container.offsetWidth
     this.setState({
-      width: nodeWidth
-    });
-  };
+      width: containerWidth - 128
+    })
+  }
 
   renderAxis = data => {
     // pull this variables to global scope REFACTOR
@@ -42,47 +42,47 @@ export default class Graph extends React.Component {
       .scaleTime()
       .domain(
         d3.extent(data, function(d) {
-          return d.formatedDate;
+          return d.formatedDate
         })
       )
-      .range([0, this.state.width - this.props.margin.right]);
+      .range([0, this.state.width - this.props.margin.right])
     // linear scale over the y axis
     const y = d3
       .scaleLinear()
       .domain([
         0,
         d3.max(data, function(d) {
-          return d.payment + 50;
+          return d.payment + 50
         })
       ])
-      .range([this.props.height - this.props.margin.bottom, 0]);
+      .range([this.props.height - this.props.margin.bottom, 0])
 
-    const yAxis = d3.axisLeft().scale(y).tickArguments([7]);
-    const xAxis = d3.axisBottom().scale(x);
-    d3.select(this.xAxis).call(xAxis);
-    d3.select(this.yAxis).call(yAxis);
-  };
+    const yAxis = d3.axisLeft().scale(y).tickArguments([7])
+    const xAxis = d3.axisBottom().scale(x)
+    d3.select(this.xAxis).call(xAxis)
+    d3.select(this.yAxis).call(yAxis)
+  }
 
   render() {
     // map the data to an array
     // Object.values = returns an array of a given object's own enumerable property values
-    const data = Object.values(this.props.data);
+    const data = Object.values(this.props.data)
 
     // format the human readable date back to a machine date
-    const formatDate = d3.timeParse('%a %b %d %Y %I:%M:%S');
+    const formatDate = d3.timeParse('%a %b %d %Y %I:%M:%S')
     data.forEach(function(d) {
-      d.formatedDate = formatDate(d.date);
-    });
+      d.formatedDate = formatDate(d.date)
+    })
 
     // scale over time along the x axis
     const x = d3
       .scaleTime()
       .domain(
         d3.extent(data, function(d) {
-          return d.formatedDate;
+          return d.formatedDate
         })
       )
-      .range([0, this.state.width - this.props.margin.right]);
+      .range([0, this.state.width - this.props.margin.right])
 
     // linear scale over the y axis
     const y = d3
@@ -90,20 +90,20 @@ export default class Graph extends React.Component {
       .domain([
         0,
         d3.max(data, function(d) {
-          return d.payment + 50;
+          return d.payment + 50
         })
       ])
-      .range([this.props.height - this.props.margin.bottom, 0]);
+      .range([this.props.height - this.props.margin.bottom, 0])
 
     // construct a new line generator
     const line = d3
       .line()
       .x(function(d) {
-        return x(d.formatedDate);
+        return x(d.formatedDate)
       })
       .y(function(d) {
-        return y(d.payment);
-      });
+        return y(d.payment)
+      })
 
     // construct associated data points
     const circles = data.map(function(d, i) {
@@ -116,17 +116,17 @@ export default class Graph extends React.Component {
           key={i}
           strokeWidth="5px"
         />
-      );
-    });
+      )
+    })
 
-    const translateChart = `translate(40, 0)`;
-    const translate = `translate(0, 0)`;
+    const translateChart = `translate(40, 0)`
+    const translate = `translate(0, 0)`
 
     return (
       <section
         className="graph-container"
-        ref={node => {
-          this.node = node;
+        ref={container => {
+          this.container = container
         }}
       >
         <svg
@@ -144,6 +144,12 @@ export default class Graph extends React.Component {
         <style>{`
           .graph-container {
             background: #31343D;
+            padding: 2em 4em;
+          }
+          @media (max-width:500px){
+            .graph-container {
+              padding: 1em;
+            }
           }
           text {
             fill: #fff;
@@ -171,7 +177,7 @@ export default class Graph extends React.Component {
           }
        `}</style>
       </section>
-    );
+    )
   }
 }
 
@@ -180,4 +186,4 @@ Graph.PropTypes = {
   height: PropTypes.number.isRequired,
   chartId: PropTypes.string.isRequired,
   data: PropTypes.object.isRequired
-};
+}
