@@ -1,7 +1,7 @@
 module.exports = {
   exportPathMap: function() {
     return {
-      '/': { page: '/index' }
-    };
+      'matthewcasserly.com/argent/': { page: '/index' }
+    }
   }
-};
+}
